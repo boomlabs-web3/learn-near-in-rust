@@ -1,22 +1,29 @@
 use near_sdk::{
     borsh::{self, BorshDeserialize, BorshSerialize},
-    near_bindgen, BorshStorageKey, PanicOnDefault,
+    near_bindgen, PanicOnDefault,
 };
 
-#[allow(unused)]
-#[derive(BorshStorageKey, BorshSerialize)]
-enum StorageKey {
-    Item,
+#[near_bindgen]
+#[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
+pub struct Counter {
+    value: u64,
 }
 
 #[near_bindgen]
-#[derive(PanicOnDefault, BorshDeserialize, BorshSerialize)]
-pub struct Contract {}
-
-#[near_bindgen]
-impl Contract {
+impl Counter {
     #[init]
-    pub fn new() -> Self {
-        Self {}
+    pub fn new(value: u64) -> Self {
+        log!("Custom counter initialization!");
+        Self { value }
+    }
+    
+    #[payable]
+    pub fn increment(&mut self) {
+        self.value += 1;
+    }
+    
+    #[private]
+    pub fn get_count(&self) -> u64 {
+        self.value
     }
 }
