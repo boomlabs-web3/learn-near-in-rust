@@ -1,8 +1,8 @@
 [package]
-name = "near-smart-contract-rust-template"
-version = "0.1.0"
+name = "boomlabs-example"
+version = "1.0.0"
+authors = ["c0wjay <official@boomlabs.dev>"]
 edition = "2021"
-authors = ["Jacob Lindahl <jacob@near.foundation>"]
 
 [dependencies]
 near-sdk = "4.0.0"
@@ -10,12 +10,4 @@ near-contract-standards = "4.0.0"
 near-contract-tools = "0.4.0"
 
 [lib]
-crate-type = ["cdylib"]
-
-[profile.release]
-codegen-units = 1
-opt-level = "z"
-lto = true
-debug = false
-panic = "abort"
-overflow-checks = true
+crate-type = ["cdylib", "rlib"]
