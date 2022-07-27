@@ -1,0 +1,10 @@
+{
+    "name": "boomlabs-example",
+    "version": "1.0.0",
+    "description": "BOOM LABS",
+    "author": "c0wjay",
+    "license": "ISC",
+    "scripts": {
+        "build": "bash build.sh && cd .."
+    }
+}
