@@ -1,0 +1,13 @@
+[package]
+name = "boomlabs-example"
+version = "1.0.0"
+authors = ["c0wjay <official@boomlabs.dev>"]
+edition = "2021"
+
+[dependencies]
+near-sdk = "4.0.0"
+near-contract-standards = "4.0.0"
+near-contract-tools = "0.4.0"
+
+[lib]
+crate-type = ["cdylib"]

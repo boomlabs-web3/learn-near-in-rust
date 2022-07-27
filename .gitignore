@@ -1,0 +1,5 @@
+**/target/
+export/
+neardev/
+target/
+**/Cargo.lock
