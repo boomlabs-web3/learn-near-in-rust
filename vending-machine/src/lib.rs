@@ -1,59 +1,67 @@
-use near_contract_standards::fungible_token::metadata::{
-    FungibleTokenMetadata, FungibleTokenMetadataProvider,
-};
-use near_contract_standards::fungible_token::FungibleToken;
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::collections::LazyOption;
+use near_sdk::{env, log, require, near_bindgen, AccountId, Balance, Gas, Promise, PromiseResult, PanicOnDefault};
 use near_sdk::json_types::U128;
-use near_sdk::{env, log, near_bindgen, AccountId, Balance, PanicOnDefault, PromiseOrValue};
+
+const ONE_YOCTO: Balance = 1;
+const ONE_NEAR: Balance = 1_000_000_000_000_000_000_000_000;
+const DECIMAL: Balance = 100_000_000;
+
+const GAS_FEE: Gas = Gas(10_000_000_000_000); // 10TGAS
+
+use crate::external_traits::*;
+
+mod external_traits;
+
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
-pub struct Contract {
-    token: FungibleToken,
-    metadata: LazyOption<FungibleTokenMetadata>,
+//defining the contract struct that holds state
+pub struct VendingMachine {
+    pub token_contract: AccountId
 }
 
 #[near_bindgen]
-impl Contract {
+impl VendingMachine {
     #[init]
-    pub fn new(
-        owner_id: AccountId,
-        total_supply: U128,
-        metadata: FungibleTokenMetadata,
-    ) -> Self {
+    #[private] // Public - but only callable by env::current_account_id()
+    pub fn new(token_contract: AccountId) -> Self {
         assert!(!env::state_exists(), "Already initialized");
-        metadata.assert_valid();
-        let mut this = Self {
-            token: FungibleToken::new(b"a".to_vec()),
-            metadata: LazyOption::new(b"m".to_vec(), Some(&metadata)),
-        };
-        this.token.internal_register_account(&owner_id);
-        this.token.internal_deposit(&owner_id, total_supply.into());
-        near_contract_standards::fungible_token::events::FtMint {
-            owner_id: &owner_id,
-            amount: &total_supply,
-            memo: Some("Initial tokens supply is minted"),
+        Self {
+        token_contract,
         }
-        .emit();
-        this
+    }
+    
+    pub fn get_token (
+        &self, 
+        amount: U128,
+    ) -> Promise {
+        let mut amount: Balance = amount.into();
+        require!( amount * ONE_NEAR <= env::attached_deposit() );
+        amount = amount * DECIMAL;
+        let amount: U128 = amount.into();
+        let promise = ext_token_contract::ext(self.token_contract.clone())
+            .with_attached_deposit(ONE_YOCTO)
+            .with_static_gas(GAS_FEE)
+            .ft_mint(env::signer_account_id(), amount);
+        
+        return promise.then(
+            Self::ext(env::current_account_id())
+                .with_static_gas(GAS_FEE)
+                .callback()
+        )
     }
 
-    fn on_account_closed(&mut self, account_id: AccountId, balance: Balance) {
-        log!("Closed @{} with {}", account_id, balance);
-    }
+    #[private]
+    pub fn callback(&self) -> String {
+        if !did_promise_succeed() {
+            log!("Error on calling token contract");
+            return "".to_string();
+        } else {
+            let result: String = match env::promise_result(0) {
+                PromiseResult::Successful(value) => near_sdk::serde_json::from_slice::<String>(&value).unwrap(),
+                _ => { log!("Error on calling token contract"); return "".to_string(); },
+            };
 
-    fn on_tokens_burned(&mut self, account_id: AccountId, amount: Balance) {
-        log!("Account @{} burned {}", account_id, amount);
-    }
-
-}
-
-near_contract_standards::impl_fungible_token_core!(Contract, token, on_tokens_burned);
-near_contract_standards::impl_fungible_token_storage!(Contract, token, on_account_closed);
-
-#[near_bindgen]
-impl FungibleTokenMetadataProvider for Contract {
-    fn ft_metadata(&self) -> FungibleTokenMetadata {
-        self.metadata.get().unwrap()
+            result
+        }
     }
 }
