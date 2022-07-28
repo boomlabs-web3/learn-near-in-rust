@@ -37,7 +37,7 @@ impl Contract {
         &mut self,
         receiver_id: AccountId,
         amount: U128,
-    ) {
+    ) -> String {
         // Full-Access Key로 sign된 function call인지 확인.
         // https://welcome.near.university/developers/contract-patterns/assert_one_yocto-forced-confirmation
         assert_one_yocto();
@@ -46,7 +46,7 @@ impl Contract {
         let caller_id = env::predecessor_account_id();
         require!(caller_id == self.controller, "Only controller can call mint");
         
-        let amount: Balance = amount.into();
+        let mut amount: Balance = amount.into();
         require!(amount > 0, "The amount should be a positive number");
 
         self.token.internal_deposit(&receiver_id, amount);
@@ -56,6 +56,10 @@ impl Contract {
             amount: &amount.into(),
             memo: Some((format!("Token for {} is minted", &receiver_id)).as_str()),
         }.emit();
+        let decimal: u32 = self.metadata.get().unwrap().decimals.into();
+        let unit: u128 = 10;
+        amount = amount / (unit.pow(decimal));
+        format!("{} tokens for {} are minted", &amount.to_string(), &receiver_id).to_string()
     }
 
     #[payable]

@@ -8,7 +8,7 @@ trait TokenContract {
       &mut self,
       receiver_id: AccountId,
       amount: U128,
-    );
+    ) -> String;
 
     fn ft_burn(
       &mut self,
