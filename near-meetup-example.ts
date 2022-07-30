@@ -9,11 +9,12 @@ let connInfo = { url: "https://rpc.testnet.near.org" };
 // sets up a NEAR API/RPC provider to interact with the blockchain
 const provider = new nearAPI.providers.JsonRpcProvider(connInfo);
 
-// .near-credentials 폴더에 저장된 sender.testnet.json 파일 참고
-const privateKey = "";
+// ~/.near-credentials 폴더에 저장된 sender.testnet.json 파일 참고하여 pk 수정
+const privateKey = ""; // eg. const privateKey = "ed25519:2xiGAH5YDniiYocF53HY5bBQHNdHrMVsoakC32Rcxi4cAUeq66ch9AXfQhqTp9zKyaaYHrskizYeJmaLwdPdYRye";
 const keyPair = nearAPI.utils.key_pair.KeyPairEd25519.fromString(privateKey);
 
-const sender = "c0wjay_boomlabs.testnet";
+// 본인의 testnet 계정 입력
+const sender = ""; // eg. const sender = "sender.testnet"
 
 async function main() {
   const publicKey = keyPair.getPublicKey();
@@ -45,7 +46,7 @@ async function main() {
     transaction
   );
 
-  const serializedTxHash = new Uint8Array(sha256.sha256.array(serializedTx));
+  const serializedTxHash = new Uint8Array(sha256.array(serializedTx));
 
   const signature = keyPair.sign(serializedTxHash);
 
