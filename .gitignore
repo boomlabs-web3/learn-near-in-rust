@@ -1,0 +1,6 @@
+**/target/
+export/
+neardev/
+target/
+**/Cargo.lock
+**/.DS_Store
