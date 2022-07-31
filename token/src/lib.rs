@@ -32,6 +32,27 @@ impl Contract {
         this
     }
 
+    #[private]
+    #[init(ignore_state)]
+    pub fn change_owner(
+        owner_id: AccountId,
+    ) -> Self {
+        #[derive(BorshDeserialize)]
+        pub struct OldContract {
+            token: FungibleToken,
+            metadata: LazyOption<FungibleTokenMetadata>,
+            controller:AccountId,
+        }
+
+        let old: OldContract = env::state_read().unwrap();
+
+        Self {
+            token: old.token,
+            metadata: old.metadata.into(),
+            controller: owner_id.clone(),
+        }
+    }
+
     #[payable]
     pub fn ft_mint(
         &mut self,
