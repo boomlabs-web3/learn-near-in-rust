@@ -14,3 +14,38 @@ github repo for near meetup in boomlabs
 | [`4.contract/upgraded-ft`](https://github.com/boomlabs-web3/near-meetup/tree/4.contract/upgraded-ft)                 | [Upgrading Contracts](https://www.near-sdk.io/upgrading/production-basics)                                     | Upgrade previously deployed FT contract in 3rd branch, and learn about schema migration.                                                               |                                                                                                                   |
 | [`5.contract/cross-contract-call`](https://github.com/boomlabs-web3/near-meetup/tree/5.contract/cross-contract-call) | [Cross-Contract Calls](https://docs.near.org/develop/contracts/crosscontract)                                  | Learn cross-contract calls by deploying vending-machine contract which interacts with FT contract above.                                               | [`near-examples/docs-examples`](https://github.com/near-examples/docs-examples/tree/main/cross-contract-hello-rs) |
 | [`6.contract/test`](https://github.com/boomlabs-web3/near-meetup/tree/6.contract/test)                               | [Test](https://docs.near.org/develop/testing/introduction)                                                     | Learn unit test & integration test in NEAR. Learn how to mock blockchain environment in local environment, spooning contracts from testnet or mainnet. | [`near/workspaces-rs`](https://github.com/near/workspaces-rs)                                                     |
+
+## Prerequisites
+
+### Install Node.js
+```=bash
+brew install node
+npm install --global yarn
+```
+### Install Rust & Wasm
+```=bash
+# Install Rust
+curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
+source $HOME/.cargo/env
+
+# Add Wasm toolchain
+rustup target add wasm32-unknown-unknown
+```
+### Install near-cli
+```=bash
+# node version should be above 12
+npm install -g near-cli
+```
+
+### Install near-api-js
+```=bash
+npm i --save near-api-js
+```
+
+### Install ts-node
+```=bash
+npm install -g typescript
+npm install -g ts-node
+```
+### [Create Testnet Wallet](https://wiki.near.org/getting-started/creating-a-near-wallet)
+### [Postman Setup](https://docs.near.org/api/rpc/setup#postman-setup)
