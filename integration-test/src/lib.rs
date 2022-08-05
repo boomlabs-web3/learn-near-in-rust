@@ -47,8 +47,8 @@ async fn main() -> anyhow::Result<()> {
         .await?;
 
     // initialize vendor contract
-    jay
-        .call(&worker, vendor_contract.id(), "new")
+    vendor_contract
+        .call(&worker, "new")
         .args_json(serde_json::json!({
             "token_contract": &token_contract_id,
         }))?
