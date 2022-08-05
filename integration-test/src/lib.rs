@@ -3,9 +3,9 @@ use serde_json::json;
 use workspaces::prelude::*;
 use workspaces::{network::Sandbox, Account, AccountId, BlockHeight, Contract, Worker};
 
-const WASM_FILEPATH: &str = "../../export/vending-machine.wasm";
-const TOKEN_CONTRACT_ACCOUNT: &str = "contract_account_name_on_testnet.testnet";
-const BLOCK_HEIGHT: BlockHeight = 12345;
+const WASM_FILEPATH: &str = "../export/vending-machine.wasm";
+const TOKEN_CONTRACT_ACCOUNT: &str = "contract.boomlabs.testnet";
+const BLOCK_HEIGHT: BlockHeight = 96257940;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -28,7 +28,7 @@ async fn main() -> anyhow::Result<()> {
         .await?;
 
     // create root accounts(TLA) & sub-account
-    let root = worker.root_account();
+    let root = worker.dev_create_account().await?;
     
     let jay = root
         .create_subaccount(&worker, "jay")
@@ -39,7 +39,7 @@ async fn main() -> anyhow::Result<()> {
 
     // initialize token contract
     jay
-        .call(&worker, token_contract_id, "new_default_meta")
+        .call(&worker, &token_contract_id, "new_default_meta")
         .args_json(serde_json::json!({
             "owner_id": vendor_contract.id(),
         }))?
@@ -50,7 +50,7 @@ async fn main() -> anyhow::Result<()> {
     jay
         .call(&worker, vendor_contract.id(), "new")
         .args_json(serde_json::json!({
-            "token_contract": token_contract_id,
+            "token_contract": &token_contract_id,
         }))?
         .transact()
         .await?;

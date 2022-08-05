@@ -5,6 +5,9 @@
     "author": "c0wjay",
     "license": "ISC",
     "scripts": {
-        "build": "cd token && bash build.sh && cd ../vending-machine && bash build.sh && cd .."
+        "build": "cd token && bash build.sh && cd ../vending-machine && bash build.sh && cd ..",
+        "test": "npm run build && npm run test:unit && npm run test:integration",
+            "test:unit": "cd token && cargo test",
+            "test:integration": "cd integration-test && cargo run --example integration-test"
     }
 }
