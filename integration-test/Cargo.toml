@@ -1,0 +1,19 @@
+[package]
+name = "boomlabs-example"
+version = "1.0.0"
+authors = ["c0wjay <official@boomlabs.dev>"]
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0"
+borsh = "0.9"
+near-units = "0.2.0"
+near-sdk = "4.0.0"
+near-contract-standards = "4.0.0"
+near-contract-tools = "0.4.0"
+serde_json = { version = "1.0", features = ["arbitrary_precision"] }
+tokio = { version = "1.18.1", features = ["full"] }
+workspaces = "0.4.0"
+
+[lib]
+crate-type = ["cdylib"]

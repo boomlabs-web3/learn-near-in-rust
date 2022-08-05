@@ -32,6 +32,22 @@ impl Contract {
         this
     }
 
+    #[init]
+    pub fn new_default_meta(owner_id: AccountId) -> Self {
+        Self::new(
+            owner_id,
+            FungibleTokenMetadata {
+                spec: "ft-1.0.0".to_string(),
+                name: "BOOM LABS TOKEN".to_string(),
+                symbol: "BOOM".to_string(),
+                icon: None,
+                reference: None,
+                reference_hash: None,
+                decimals: 8,
+            },
+        )
+    }
+
     #[payable]
     pub fn ft_mint(
         &mut self,
