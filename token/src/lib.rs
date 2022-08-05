@@ -32,27 +32,6 @@ impl Contract {
         this
     }
 
-    #[private]
-    #[init(ignore_state)]
-    pub fn change_owner(
-        owner_id: AccountId,
-    ) -> Self {
-        #[derive(BorshDeserialize)]
-        pub struct OldContract {
-            token: FungibleToken,
-            metadata: LazyOption<FungibleTokenMetadata>,
-            controller:AccountId,
-        }
-
-        let old: OldContract = env::state_read().unwrap();
-
-        Self {
-            token: old.token,
-            metadata: old.metadata.into(),
-            controller: owner_id.clone(),
-        }
-    }
-
     #[payable]
     pub fn ft_mint(
         &mut self,
@@ -121,5 +100,155 @@ near_contract_standards::impl_fungible_token_storage!(Contract, token, on_accoun
 impl FungibleTokenMetadataProvider for Contract {
     fn ft_metadata(&self) -> FungibleTokenMetadata {
         self.metadata.get().unwrap()
+    }
+}
+
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod tests {
+    // accounts: "alice", "bob", "charlie", "danny", "eugene", "fargo"
+    use near_sdk::test_utils::{accounts, VMContextBuilder};
+    use near_sdk::MockedBlockchain;
+    use near_contract_standards::fungible_token::metadata::FungibleTokenMetadata;
+    use near_sdk::{testing_env, Balance};
+
+    use super::*;
+
+    const AMOUNT: Balance = 2_000_000_000;
+
+    fn get_context(predecessor_account_id: AccountId) -> VMContextBuilder {
+        let mut builder = VMContextBuilder::new();
+        builder
+            .current_account_id(accounts(0))
+            .signer_account_id(predecessor_account_id.clone())
+            .predecessor_account_id(predecessor_account_id);
+        builder
+    }
+
+    #[test]
+    fn test_new() {
+        // current_account_id = "alice", signer_account_id = "bob"
+        let mut context = get_context(accounts(1));
+        testing_env!(context.build());
+        let contract = Contract::new(accounts(1).into(), FungibleTokenMetadata {
+            spec: "ft-1.0.0".to_string(),
+            name: "BOOM LABS TEST Token".to_string(),
+            symbol: "TEST".to_string(),
+            icon: Some("".to_string()),
+            reference: None,
+            reference_hash: None,
+            decimals: 8,
+        });
+        testing_env!(context.is_view(true).build());
+        assert_eq!(contract.controller, AccountId::new_unchecked("bob".to_string()));
+    }
+
+    #[test]
+    #[should_panic(expected = "The contract is not initialized")]
+    fn test_default() {
+        let context = get_context(accounts(1));
+        testing_env!(context.build());
+        let _contract = Contract::default();
+    }
+
+    #[test]
+    fn test_mint() {
+        let mut context = get_context(accounts(2));
+        testing_env!(context.build());
+        let mut contract = Contract::new(accounts(1).into(), FungibleTokenMetadata {
+            spec: "ft-1.0.0".to_string(),
+            name: "BOOM LABS TEST Token".to_string(),
+            symbol: "TEST".to_string(),
+            icon: Some("".to_string()),
+            reference: None,
+            reference_hash: None,
+            decimals: 8,
+        });
+        testing_env!(context
+            .storage_usage(env::storage_usage())
+            .attached_deposit(contract.storage_balance_bounds().min.into())
+            .predecessor_account_id(accounts(1))
+            .build());
+        // Paying for account registration, aka storage deposit
+        contract.storage_deposit(None, None);
+
+        testing_env!(context
+            .storage_usage(env::storage_usage())
+            .attached_deposit(1)
+            .predecessor_account_id(accounts(1))
+            .build());
+        let mint_amount = AMOUNT;
+        let string = contract.ft_mint(accounts(1), mint_amount.into());
+
+        testing_env!(context
+            .storage_usage(env::storage_usage())
+            .account_balance(env::account_balance())
+            .is_view(true)
+            .attached_deposit(0)
+            .build());
+        assert_eq!(contract.ft_balance_of(accounts(1)).0, AMOUNT);
+        assert_eq!(string, "20 tokens for bob are minted".to_string());
+    }
+
+    #[test]
+    #[should_panic(expected = "Only controller can call mint")]
+    fn test_mint_authority() {
+        let mut context = get_context(accounts(2));
+        testing_env!(context.build());
+        let mut contract = Contract::new(accounts(1).into(), FungibleTokenMetadata {
+            spec: "ft-1.0.0".to_string(),
+            name: "BOOM LABS TEST Token".to_string(),
+            symbol: "TEST".to_string(),
+            icon: Some("".to_string()),
+            reference: None,
+            reference_hash: None,
+            decimals: 8,
+        });
+        testing_env!(context
+            .storage_usage(env::storage_usage())
+            .attached_deposit(contract.storage_balance_bounds().min.into())
+            .predecessor_account_id(accounts(1))
+            .build());
+        // Paying for account registration, aka storage deposit
+        contract.storage_deposit(None, None);
+
+        testing_env!(context
+            .storage_usage(env::storage_usage())
+            .attached_deposit(1)
+            .predecessor_account_id(accounts(2))
+            .build());
+        let mint_amount = AMOUNT;
+        contract.ft_mint(accounts(1), mint_amount.into());
+    }
+
+    #[test]
+    #[should_panic(expected = "Requires attached deposit of exactly 1 yoctoNEAR")]
+    fn test_mint_assert_one_yocto() {
+        let mut context = get_context(accounts(2));
+        testing_env!(context.build());
+        let mut contract = Contract::new(accounts(1).into(), FungibleTokenMetadata {
+            spec: "ft-1.0.0".to_string(),
+            name: "BOOM LABS TEST Token".to_string(),
+            symbol: "TEST".to_string(),
+            icon: Some("".to_string()),
+            reference: None,
+            reference_hash: None,
+            decimals: 8,
+        });
+        testing_env!(context
+            .storage_usage(env::storage_usage())
+            .attached_deposit(contract.storage_balance_bounds().min.into())
+            .predecessor_account_id(accounts(1))
+            .build());
+        // Paying for account registration, aka storage deposit
+        contract.storage_deposit(None, None);
+
+        testing_env!(context
+            .storage_usage(env::storage_usage())
+            .attached_deposit(0)
+            .predecessor_account_id(accounts(2))
+            .build());
+        let mint_amount = AMOUNT;
+        contract.ft_mint(accounts(1), mint_amount.into());
     }
 }
