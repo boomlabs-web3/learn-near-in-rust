@@ -1,5 +1,5 @@
 # near_meetup
-github repo for near meetup in boomlabs
+github repository for near meetup in boomlabs
 ## Additional Material
 [Cheat Sheet](https://bit.ly/near_meetup) for Near Protocol Hands-on workshop.
 
