@@ -2,14 +2,14 @@
 In this section, we will learn how to interact with Near RPC node by sending 1 NEAR testnet token.  
 >__Mission: Sending 1 NEAR token to `boomlabs.testnet` in 3 ways__
 
-## By Using near-cli (HIGH LEVEL) 
+## 1. By Using near-cli (HIGH LEVEL) 
 * Docs Reference: [NEAR CLI](https://docs.near.org/tools/near-cli#near-send)
 * Github Reference: [`near/near-cli`](https://github.com/near/near-cli)
 ```bash
 near login
 near send sender.testnet boomlabs.testnet 1
 ```
-## By Using near-api-js (MID LEVEL)
+## 2. By Using near-api-js (MID LEVEL)
 * Docs Reference: [Create a Transaction](https://docs.near.org/integrator/create-transactions#high-level----create-a-transaction)
 ```bash
 near repl
@@ -106,7 +106,7 @@ You can get result object below.
   }
 }
 ```
-## By Using near-api-js & postman (LOW LEVEL)
+## 3. By Using near-api-js & postman (LOW LEVEL)
 * Docs Reference: [Create a Transaction](https://docs.near.org/integrator/create-transactions#low-level----create-a-transaction)
 
 In this tutorial, we will use `near-meetup-example.ts` file stored in this branch.
