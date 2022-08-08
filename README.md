@@ -44,7 +44,8 @@ create configuration to connect with NEAR blockchain, and connect with NEAR bloc
 ```javascript
 const senderAccount = await nearConnection.account("sender.testnet");
 ```
-get sender's account object. Modify `"sender.testnet"` to your account address. If you type senderAccount in repl environment, you can get account object below.
+get sender's account object. Modify `"sender.testnet"` to your account address.   
+If you type senderAccount in repl environment, you can get account object below.
 ```bash
 Account {
   accessKeyByPublicKeyCache: {},
@@ -61,8 +62,8 @@ Account {
 const amount = utils.format.parseNearAmount('1');
 const result = await senderAccount.sendMoney('boomlabs.testnet', amount);
 ```
-finally send 1 NEAR from your account to `boomlabs.testnet`.
-and you can get transaction result in result object, so type `result` in repl environment!
+finally send 1 NEAR from your account to `boomlabs.testnet`.   
+and you can get transaction result in result object, so type `result` in repl environment!   
 You can get result object below.
 ```bash
 {
@@ -124,15 +125,15 @@ Set NEAR API/RPC provider.
 const privateKey = "";
 const keyPair = nearAPI.utils.key_pair.KeyPairEd25519.fromString(privateKey);
 ```
-In this line, please refer `'your account address'.testnet.json` file stored in local key storage. If your computer is Mac OS, it will stored in `~/.near-credentials/testnet/`
-Copy & paste the value of private key in first line.
+In this line, please refer `'your account address'.testnet.json` file stored in local key storage. If your computer is Mac OS, it will stored in `~/.near-credentials/testnet/`   
+Copy & paste the value of private key in first line.   
 Then, second line will create keyPair from privateKey.
 ```javascript
 const sender = 'sender.testnet';
 const publicKey = keyPair.getPublicKey();
 const accessKey = await provider.query(`access_key/${sender}/${publicKey.toString()}`, '');
 ```
-Modify `'sender.testnet'` to your account address.
+Modify `'sender.testnet'` to your account address.   
 This lines will get publicKey from keyPair, and query access key of your account via public key.
 ```javascript
 const nonce = ++accessKey.nonce;
