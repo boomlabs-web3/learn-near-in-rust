@@ -15,7 +15,7 @@ near call $USER new '{"owner_id": "'$USER'", "total_supply": "1000", "metadata":
 ```
 Modify first line, `"sender.testnet"` to your account address.
 
-## Deep dive to contract, what's going on in the contract?
+## Deep dive to contract: what's going on in the contract?
 ```rust
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
@@ -81,7 +81,7 @@ where
 }
 ```
 When you call `new` method with `"owner_id"`, `"total_supply"`, and `"metadata"` arguments,
-`new` method initialize FT contract.
+`new` method initialize FT contract.   
 `new` method initialize FungibleToken object and Metadata object with storage key, "a" to byte vector and "m" to byte vectory corresponding. 
 
 ## NEXT STEP: [DAY 2, Upgrade Pre-Deployed Contract and Learn about Schema Migration](https://github.com/boomlabs-web3/near-meetup/tree/4.contract/upgraded-ft)
