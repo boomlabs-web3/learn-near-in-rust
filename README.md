@@ -3,7 +3,7 @@ In this section, we will learn cross-contract calls by deploying vending-machine
 * Docs Reference: [Cross-Contract Calls](https://docs.near.org/develop/contracts/crosscontract)
 * Github Reference: [`near-examples/docs-examples`](https://github.com/near-examples/docs-examples/tree/main/cross-contract-hello-rs)
 
-![image](https://user-images.githubusercontent.com/96561121/187244014-19e7a22c-0315-4454-8601-af2041333b4f.png)
+![image](https://user-images.githubusercontent.com/96561121/187247472-770e1cfa-a9ae-4700-8368-674b552efea7.png)
 This is a diagram explains what we build.
 1) User calls `get_token` method of `vendor.sender.testnet` contract.
 2) `vendor.sender.testnet` contract calls `ft_mint` method of `token.sender.testnet` with `sender.testnet` & `amount` as arguments.
