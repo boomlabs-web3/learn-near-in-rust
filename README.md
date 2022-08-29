@@ -1,7 +1,8 @@
 # near_meetup
 github repository for near meetup in boomlabs
 ## Additional Material
-[Cheat Sheet](https://bit.ly/near_meetup) for Near Protocol Hands-on workshop.
+* [Cheat Sheet](https://bit.ly/near_meetup) for Near Protocol Hands-on workshop.
+* [[NEAR 102] Part 1: Understanding Near Protocols — Mainnet Architecture and RPC Calls](https://medium.com/dsrv/near-102-understanding-near-protocol-mainnet-architecture-and-rpc-call-75351d28bdb4), DSRV medium post written in Korean corresponding to Day 1.
 
 ## Overview
 | Branch                                                                                                               | Docs Tutorial                                                                                                  | Description                                                                                                                                            | Reference                                                                                                         |
