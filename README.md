@@ -30,8 +30,44 @@ fn get_context(predecessor_account_id: AccountId) -> VMContextBuilder {
     builder
 }
 ```
-`get_context` method is used to build testing context.
+`get_context` method is used to build custom test context, mocking `current_account_id`, `signer_account_id`, or etc.   
+The [`testing_env!`](https://docs.rs/near-sdk/latest/near_sdk/macro.testing_env.html) macro will initialize the blockchain interface with the `VMContext` which is either initialized through `VMContextBuilder` or manually through itself.
+```rust
+#[test]
+#[should_panic(expected = "Only controller can call mint")]
+fn test_mint_authority() {
+    let mut context = get_context(accounts(2));
+    // testing_env!(context.build());
+    let mut contract = Contract::new(accounts(1).into(), FungibleTokenMetadata {
+        spec: "ft-1.0.0".to_string(),
+        name: "BOOM LABS TEST Token".to_string(),
+        symbol: "TEST".to_string(),
+        icon: Some("".to_string()),
+        reference: None,
+        reference_hash: None,
+        decimals: 8,
+    });
+    testing_env!(context
+        .storage_usage(env::storage_usage())
+        .attached_deposit(contract.storage_balance_bounds().min.into())
+        .predecessor_account_id(accounts(1))
+        .build());
+    // Paying for account registration, aka storage deposit
+    contract.storage_deposit(None, None);
 
+    testing_env!(context
+        .storage_usage(env::storage_usage())
+        .attached_deposit(1)
+        .predecessor_account_id(accounts(2))
+        .build());
+    let mint_amount = AMOUNT;
+    contract.ft_mint(accounts(1), mint_amount.into());
+}
+```
+This method is to test mint authority.   
+In this test case, `contract.controller` is `"bob" == accounts(1)`, and it only has mint authority.   
+However, `"charlie" == accounts(2)` calls `ft_mint` method of `contract`, so this test case should be failed.   
+`#[should_panic(expected = "Only controller can call mint")]` attribute macro tells that `test_mint_authority()` method will be failed with panic message, `"Only controller can call mint"`.
 ## Integration Test
 Integration test is written in `near-meetup/integration-test/src/lib.rs`.
 ```rust
