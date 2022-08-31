@@ -13,6 +13,24 @@ In this section, we will learn unit test & integration test.
 git checkout 6.contract/test
 ```
 Checkout to 6th branch.   
+In unit test, we will use `test` module of `cargo` in rust. You may refer the official [cargo book](https://doc.rust-lang.org/cargo/guide/tests.html).
+```rust
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod tests
+```
+`tests` is module of test.   
+`#[cfg(..)]` is attribute macro which tells compiler to compile `tests` module only when the conditions in parentheses are true.
+```rust
+fn get_context(predecessor_account_id: AccountId) -> VMContextBuilder {
+    let mut builder = VMContextBuilder::new();
+    builder
+        .current_account_id(accounts(0))
+        .signer_account_id(predecessor_account_id.clone())
+        .predecessor_account_id(predecessor_account_id);
+    builder
+}
+```
+`get_context` method is used to build testing context.
 
 ## Integration Test
 Integration test is written in `near-meetup/integration-test/src/lib.rs`.
